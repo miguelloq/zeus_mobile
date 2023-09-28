@@ -48,7 +48,7 @@ class _SplashPageState extends State<SplashPage> {
             curve: Curves.easeIn,
             opacity: _animationOpacityLogo,
             onEnd: () {
-              Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/product');
             },
             child: AnimatedContainer(
               duration: const Duration(seconds: 3),

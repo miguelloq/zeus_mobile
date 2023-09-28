@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:zeus_app/src/core/themes/themes.dart';
+import 'package:zeus_app/src/features/product/product_screen.dart';
 import 'package:zeus_app/src/features/product/vm/product_vm.dart';
 import 'package:zeus_app/src/features/product/services/product_service.dart';
 import 'package:zeus_app/src/features/splash_screen.dart';
@@ -36,6 +37,7 @@ class AppWidget extends StatelessWidget {
           routes: {
             '/splash': (_) => const SplashPage(),
             '/home': (_) => const HomeScreen(),
+            '/product': (_) => const ProductScreen(),
           },
           initialRoute: '/splash',
         ),

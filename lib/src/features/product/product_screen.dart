@@ -52,7 +52,7 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: RefreshIndicator(
         onRefresh: () => productVM.updateProducts(),
         child: CustomScrollView(slivers: [
