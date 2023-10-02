@@ -5,5 +5,5 @@ sealed class ImageConstants {
 }
 
 sealed class ApiConsts {
-  static const String path = 'http://192.168.56.1:3001';
+  static const String path = 'http://10.50.7.29:3001';
 }

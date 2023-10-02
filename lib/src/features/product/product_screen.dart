@@ -162,7 +162,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   horizontalPadding:
                                       MediaQuery.sizeOf(context).width * .05,
                                   verticalPadding:
-                                      MediaQuery.sizeOf(context).height * .2,
+                                      MediaQuery.sizeOf(context).height * .25,
                                   id: currentProduct.id!,
                                   name: currentProduct.name,
                                   type: currentProduct.typeVisualise,
@@ -198,7 +198,7 @@ class _ProductScreenState extends State<ProductScreen> {
               formKey: formKey,
               updateProducts: productVM.updateProducts);
         },
-        label: const Text('Adicionar Produto'),
+        label: const Text('Adicionar compra'),
       ),
     );
   }

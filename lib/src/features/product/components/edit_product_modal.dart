@@ -83,18 +83,19 @@ class _editProductWidgetState extends State<_editProductWidget> {
     super.initState();
   }
 
-  void _showDatePicker() {
-    DateTime currentDate = DateTime.now();
+  void _showDatePicker(
+      {required DateTime parameterDate, required DateTime chosenDate}) {
     showDatePicker(
             context: context,
-            initialDate: currentDate,
-            firstDate: currentDate.subtract(const Duration(days: 50)),
-            lastDate: currentDate.add(const Duration(days: 50)))
+            initialDate: chosenDate,
+            firstDate: parameterDate.subtract(const Duration(days: 50)),
+            lastDate: parameterDate.add(const Duration(days: 50)))
         .then((value) {
       if (value != null) {
         setState(() {
           chosenDate = value;
         });
+        print(chosenDate);
       }
     });
   }
@@ -125,7 +126,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text("Error em editar produto."),
+          title: const Text("Error em editar."),
           content: Text("Error $e"),
           actions: [
             ElevatedButton(
@@ -151,7 +152,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
         }
         if (snapshot.hasError) {
           return const Center(
-            child: Text("Deu erro"),
+            child: Text("Erro em obter as informações do produto editado "),
           );
         } else {
           String inititalName = snapshot.data!.name;
@@ -183,7 +184,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
                     ],
                   ),
                   Text(
-                    'Edite um produto!',
+                    'Edite uma compra!',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   Padding(
@@ -212,8 +213,8 @@ class _editProductWidgetState extends State<_editProductWidget> {
                           validator: Validatorless.multiple([
                             Validatorless.required(
                                 'O campo nome é obrigatório.'),
-                            Validatorless.between(4, 20,
-                                'O nome deve ter o tamanho entre 4 e 20 caracteres.'),
+                            Validatorless.between(3, 24,
+                                'O nome deve ter o tamanho entre 3 e 24 caracteres.'),
                           ]),
                         ),
                         const SizedBox(height: 25),
@@ -242,6 +243,8 @@ class _editProductWidgetState extends State<_editProductWidget> {
                                   'O campo quantidade é obrigatório'),
                               Validatorless.regex(RegExp(r'^[0-9.]+$'),
                                   'Somente numeros e ponto'),
+                              Validatorless.numbersBetweenInterval(0.001, 10000,
+                                  "A quantidade deve estar entre 0 e 10000")
                             ],
                           ),
                         ),
@@ -258,7 +261,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
                                 Radius.circular(25),
                               ),
                             ),
-                            labelText: 'Preço',
+                            labelText: 'Preço(Somente numeros e ponto)',
                             labelStyle: TextStyle(
                                 color:
                                     Theme.of(context).colorScheme.onBackground),
@@ -271,20 +274,14 @@ class _editProductWidgetState extends State<_editProductWidget> {
                                   'O campo preço é obrigatório'),
                               Validatorless.regex(RegExp(r'^[0-9.]+$'),
                                   'Somente numeros e ponto'),
+                              Validatorless.numbersBetweenInterval(
+                                  0.001,
+                                  1000000,
+                                  "O preço deve ser estar entre 0 e 1000000")
                             ],
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  OutlinedButton(
-                    onPressed: _showDatePicker,
-                    style: const ButtonStyle(
-                        elevation: MaterialStatePropertyAll(2)),
-                    child: Text(
-                      'Data\n ${chosenDate == null ? initialChosenDate.day : chosenDate!.day}/${chosenDate == null ? initialChosenDate.month : chosenDate!.month}/${chosenDate == null ? initialChosenDate.year : chosenDate!.year}',
-                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -299,18 +296,29 @@ class _editProductWidgetState extends State<_editProductWidget> {
                       DropdownMenuItem(value: 'outro', child: Text('Outro')),
                     ],
                     onChanged: (newValue) {
-                      print(" idandinadinsadinsadinsaidnsidnaid ${newValue}");
                       setState(() {
                         dropdownValue = newValue!;
                       });
                     },
                   ),
+                  // const SizedBox(height: 25),
+                  // OutlinedButton(
+                  //   onPressed: () => _showDatePicker(
+                  //       parameterDate: initialChosenDate,
+                  //       chosenDate: chosenDate ?? initialChosenDate),
+                  //   style: const ButtonStyle(
+                  //       elevation: MaterialStatePropertyAll(2)),
+                  //   child: Text(
+                  //     'Data\n ${chosenDate == null ? initialChosenDate.day : chosenDate!.day}/${chosenDate == null ? initialChosenDate.month : chosenDate!.month}/${chosenDate == null ? initialChosenDate.year : chosenDate!.year}',
+                  //     textAlign: TextAlign.center,
+                  //   ),
+                  // ),
                   const SizedBox(height: 40),
                   FilledButton(
                     style: const ButtonStyle(
                       elevation: MaterialStatePropertyAll(2),
                     ),
-                    onPressed: () async {
+                    onPressed: () {
                       if (widget.formKey.currentState?.validate() == true) {
                         String sendName =
                             textName == null ? inititalName : textName!;

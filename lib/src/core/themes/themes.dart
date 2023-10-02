@@ -38,7 +38,6 @@ final lightTheme = ThemeData(
     ),
   ),
   dividerTheme: DividerThemeData(color: _lightColorScheme.onBackground),
-  //dropdownMenuTheme: DropdownMenuThemeData(inputDecorationTheme: InputDecorationTheme()),
 );
 
 final darkTheme = ThemeData(

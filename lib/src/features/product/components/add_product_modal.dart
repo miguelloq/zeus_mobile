@@ -98,7 +98,7 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text("Error em adicionar produto no banco de dados. Error $e"),
+          title: Text("Error em adicionar compra no banco de dados. Error $e"),
           actions: [
             ElevatedButton(
                 onPressed: () {
@@ -112,11 +112,13 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
   }
 
   void _showDatePicker() {
+    DateTime currentDate = DateTime.now();
     showDatePicker(
             context: context,
             initialDate: chosenDate,
-            firstDate: chosenDate.subtract(const Duration(days: 50)),
-            lastDate: chosenDate.add(const Duration(days: 50)))
+            currentDate: currentDate,
+            firstDate: currentDate.subtract(const Duration(days: 50)),
+            lastDate: currentDate.add(const Duration(days: 50)))
         .then((value) {
       if (value != null) {
         setState(() {
@@ -158,7 +160,7 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
               ],
             ),
             Text(
-              'Adicione um produto!',
+              'Adicione uma compra!',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             Padding(
@@ -182,8 +184,8 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
                     ),
                     validator: Validatorless.multiple([
                       Validatorless.required('O campo nome é obrigatório.'),
-                      Validatorless.between(4, 20,
-                          'O nome deve ter o tamanho entre 4 e 20 caracteres.'),
+                      Validatorless.between(3, 24,
+                          'O nome deve ter o tamanho entre 3 e 24 caracteres.'),
                     ]),
                   ),
                   const SizedBox(height: 25),
@@ -208,6 +210,8 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
                             'O campo quantidade é obrigatório'),
                         Validatorless.regex(
                             RegExp(r'^[0-9.]+$'), 'Somente numeros e ponto'),
+                        Validatorless.numbersBetweenInterval(0.001, 10000,
+                            "A quantidade deve estar entre 0 e 10000")
                       ],
                     ),
                   ),
@@ -232,19 +236,12 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
                         Validatorless.required('O campo preço é obrigatório'),
                         Validatorless.regex(
                             RegExp(r'^[0-9.]+$'), 'Somente numeros e ponto'),
+                        Validatorless.numbersBetweenInterval(0.001, 1000000,
+                            "O preço deve ser estar entre 0 e 1000000")
                       ],
                     ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 25),
-            OutlinedButton(
-              onPressed: _showDatePicker,
-              style: const ButtonStyle(elevation: MaterialStatePropertyAll(2)),
-              child: Text(
-                'Data\n ${chosenDate.day}/${chosenDate.month}/${chosenDate.year}',
-                textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(height: 25),
@@ -261,6 +258,15 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
                   dropdownValue = newValue!;
                 });
               },
+            ),
+            const SizedBox(height: 25),
+            OutlinedButton(
+              onPressed: _showDatePicker,
+              style: const ButtonStyle(elevation: MaterialStatePropertyAll(2)),
+              child: Text(
+                'Data\n ${chosenDate.day}/${chosenDate.month}/${chosenDate.year}',
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 40),
             FilledButton(

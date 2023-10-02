@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zeus_app/src/core/utils/widgets/constrained_view.dart';
 import 'package:zeus_app/src/features/product/components/edit_product_modal.dart';
 
 import '../services/product_service.dart';
@@ -67,7 +68,8 @@ class _HeroProductBoxState extends State<HeroProductBox> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text("Erro ao deletar o produto"),
+                    title: const Text("Erro ao deletar"),
+                    content: Text("Error $e"),
                     actions: [
                       ElevatedButton(
                           onPressed: () {
@@ -98,56 +100,60 @@ class _HeroProductBoxState extends State<HeroProductBox> {
           widget.horizontalPadding,
           widget.verticalPadding,
         ),
-        child: Material(
-          elevation: 2,
-          color: Theme.of(context).colorScheme.secondaryContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: SingleChildScrollView(
+        child: ConstrainedView(
+          width:
+              MediaQuery.sizeOf(context).width - (widget.horizontalPadding * 2),
+          height:
+              MediaQuery.sizeOf(context).height - (widget.verticalPadding * 2),
+          child: Material(
+            elevation: 2,
+            color: Theme.of(context).colorScheme.secondaryContainer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const SizedBox(height: 30),
-                  Text(
-                    widget.name,
-                    style: Theme.of(context).textTheme.displaySmall,
-                  ),
-                  Text(
-                    widget.type,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 30),
-                  const Divider(thickness: 2),
-                  const SizedBox(height: 30),
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Preço: R\$ ${widget.price.toStringAsFixed(2)}',
+                        widget.name,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      Text(
+                        widget.type,
                         style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Divider(thickness: 1.5),
+                      Text(
+                        'Preço da compra: R\$ ${widget.price.toStringAsFixed(2)}',
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
                         'Quantidade: ${widget.quantity.toStringAsFixed(2)}',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
                         'Data da compra: ${widget.creationDate.day}/${widget.creationDate.month}/${widget.creationDate.year}',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
                         widget.lastEditeDate != null
                             ? 'Última edição: ${widget.lastEditeDate!.day}/${widget.lastEditeDate!.month}/${widget.lastEditeDate!.year}'
                             : 'Última edição: Não foi editado',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
+                      const Divider(thickness: 1.5),
                     ],
                   ),
-                  const SizedBox(height: 30),
-                  const Divider(thickness: 2),
-                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [

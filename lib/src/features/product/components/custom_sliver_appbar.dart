@@ -14,7 +14,7 @@ class CustomSliverAppbar extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: true,
         title: Text(
-          'Gerencimamento de produtos',
+          'Gerencimamento',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleLarge,
         ),
