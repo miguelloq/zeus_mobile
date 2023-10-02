@@ -71,7 +71,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
     AuxDropDown(
         value: 'Brinquedo', visibleValue: ProductType.brinquedo.toString()),
     AuxDropDown(value: 'Remédio', visibleValue: ProductType.remedio.toString()),
-    AuxDropDown(value: 'Outro', visibleValue: ProductType.outro.toString()),
+    AuxDropDown(value: 'Outros', visibleValue: ProductType.outro.toString()),
   ];
   String? dropdownValue;
 
@@ -95,7 +95,6 @@ class _editProductWidgetState extends State<_editProductWidget> {
         setState(() {
           chosenDate = value;
         });
-        print(chosenDate);
       }
     });
   }
@@ -122,19 +121,14 @@ class _editProductWidgetState extends State<_editProductWidget> {
         'quantity': quantity,
         'purchaseTime': creationDate.toUtc().toIso8601String()
       });
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Error em editar."),
-          content: Text("Error $e"),
-          actions: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Fechar"))
-          ],
+    } on Exception catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Error em editar compra. $e",
+            style: TextStyle(color: Theme.of(context).colorScheme.onError),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -163,8 +157,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
           return Form(
             key: widget.formKey,
             child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: ListView(
                 children: [
                   const SizedBox(
                     height: 15,
@@ -185,7 +178,8 @@ class _editProductWidgetState extends State<_editProductWidget> {
                   ),
                   Text(
                     'Edite uma compra!',
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(12.0),
@@ -243,7 +237,7 @@ class _editProductWidgetState extends State<_editProductWidget> {
                                   'O campo quantidade é obrigatório'),
                               Validatorless.regex(RegExp(r'^[0-9.]+$'),
                                   'Somente numeros e ponto'),
-                              Validatorless.numbersBetweenInterval(0.001, 10000,
+                              Validatorless.numbersBetweenInterval(0.01, 10000,
                                   "A quantidade deve estar entre 0 e 10000")
                             ],
                           ),
@@ -275,32 +269,35 @@ class _editProductWidgetState extends State<_editProductWidget> {
                               Validatorless.regex(RegExp(r'^[0-9.]+$'),
                                   'Somente numeros e ponto'),
                               Validatorless.numbersBetweenInterval(
-                                  0.001,
+                                  0.01,
                                   1000000,
                                   "O preço deve ser estar entre 0 e 1000000")
                             ],
                           ),
                         ),
+                        const SizedBox(height: 25),
+                        DropdownButton(
+                          value: dropdownValue ?? initialDropdownValue,
+                          items: const [
+                            DropdownMenuItem(
+                                value: 'racao', child: Text('Ração')),
+                            DropdownMenuItem(
+                                value: 'brinquedo', child: Text('Brinquedo')),
+                            DropdownMenuItem(
+                                value: 'remedio', child: Text('Remédio')),
+                            DropdownMenuItem(
+                                value: 'outro', child: Text('Outros')),
+                          ],
+                          onChanged: (newValue) {
+                            setState(() {
+                              dropdownValue = newValue!;
+                            });
+                          },
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 25),
-                  DropdownButton(
-                    value: dropdownValue ?? initialDropdownValue,
-                    items: const [
-                      DropdownMenuItem(value: 'racao', child: Text('Ração')),
-                      DropdownMenuItem(
-                          value: 'brinquedo', child: Text('Brinquedo')),
-                      DropdownMenuItem(
-                          value: 'remedio', child: Text('Remédio')),
-                      DropdownMenuItem(value: 'outro', child: Text('Outro')),
-                    ],
-                    onChanged: (newValue) {
-                      setState(() {
-                        dropdownValue = newValue!;
-                      });
-                    },
-                  ),
+
                   // const SizedBox(height: 25),
                   // OutlinedButton(
                   //   onPressed: () => _showDatePicker(
@@ -313,39 +310,42 @@ class _editProductWidgetState extends State<_editProductWidget> {
                   //     textAlign: TextAlign.center,
                   //   ),
                   // ),
-                  const SizedBox(height: 40),
-                  FilledButton(
-                    style: const ButtonStyle(
-                      elevation: MaterialStatePropertyAll(2),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
+                    child: FilledButton(
+                      style: const ButtonStyle(
+                        elevation: MaterialStatePropertyAll(2),
+                      ),
+                      onPressed: () {
+                        if (widget.formKey.currentState?.validate() == true) {
+                          String sendName =
+                              textName == null ? inititalName : textName!;
+                          String sendPrice =
+                              textPrice == null ? initialPrice : textPrice!;
+                          String sendQuantity = textQuantity == null
+                              ? initialQuantity
+                              : textQuantity!;
+                          _putProduct(
+                            editProductId: widget.editProductid,
+                            name: sendName,
+                            type: dropdownValue ?? initialDropdownValue,
+                            price: double.tryParse(
+                                    sendPrice.replaceAll(",", "")) ??
+                                0.0,
+                            quantity: double.tryParse(
+                                    sendQuantity.replaceAll(",", "")) ??
+                                0.0,
+                            creationDate: chosenDate ?? initialChosenDate,
+                          ).then((_) {
+                            widget.updateProducts();
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          });
+                        }
+                      },
+                      child: const Text('Editar'),
                     ),
-                    onPressed: () {
-                      if (widget.formKey.currentState?.validate() == true) {
-                        String sendName =
-                            textName == null ? inititalName : textName!;
-                        String sendPrice =
-                            textPrice == null ? initialPrice : textPrice!;
-                        String sendQuantity = textQuantity == null
-                            ? initialQuantity
-                            : textQuantity!;
-                        _putProduct(
-                          editProductId: widget.editProductid,
-                          name: sendName,
-                          type: dropdownValue ?? initialDropdownValue,
-                          price:
-                              double.tryParse(sendPrice.replaceAll(",", "")) ??
-                                  0.0,
-                          quantity: double.tryParse(
-                                  sendQuantity.replaceAll(",", "")) ??
-                              0.0,
-                          creationDate: chosenDate ?? initialChosenDate,
-                        ).then((_) {
-                          widget.updateProducts();
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                        });
-                      }
-                    },
-                    child: const Text('Editar'),
                   )
                 ],
               ),

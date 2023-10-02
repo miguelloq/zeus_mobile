@@ -59,27 +59,22 @@ class _HeroProductBoxState extends State<HeroProductBox> {
           ),
           ElevatedButton(
             onPressed: () {
-              try {
-                productService.deleteProduct(id: id);
+              productService.deleteProduct(id: id).then((value) {
                 widget.updateProducts();
                 Navigator.pop(context);
                 Navigator.pop(context);
-              } catch (e) {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Erro ao deletar"),
-                    content: Text("Error $e"),
-                    actions: [
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Fechar"))
-                    ],
+              }).catchError((e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "Error em deletar compra. $e",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onError),
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.error,
                   ),
                 );
-              }
+              });
             },
             child: const Text("Deletar"),
           )

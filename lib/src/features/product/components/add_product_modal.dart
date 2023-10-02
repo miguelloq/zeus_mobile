@@ -63,7 +63,7 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
     AuxDropDown(
         value: 'Brinquedo', visibleValue: ProductType.brinquedo.toString()),
     AuxDropDown(value: 'Remédio', visibleValue: ProductType.remedio.toString()),
-    AuxDropDown(value: 'Outro', visibleValue: ProductType.outro.toString()),
+    AuxDropDown(value: 'Outros', visibleValue: ProductType.outro.toString()),
   ];
   String dropdownValue = 'racao';
 
@@ -95,17 +95,13 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
         'purchaseTime': creationDate.toUtc().toIso8601String()
       });
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Error em adicionar compra no banco de dados. Error $e"),
-          actions: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("Fechar"))
-          ],
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Error em adicionar compra. $e",
+            style: TextStyle(color: Theme.of(context).colorScheme.onError),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
     }
@@ -139,8 +135,7 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
     return Form(
       key: widget.formKey,
       child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
           children: [
             const SizedBox(
               height: 15,
@@ -161,7 +156,8 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
             ),
             Text(
               'Adicione uma compra!',
-              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -210,7 +206,7 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
                             'O campo quantidade é obrigatório'),
                         Validatorless.regex(
                             RegExp(r'^[0-9.]+$'), 'Somente numeros e ponto'),
-                        Validatorless.numbersBetweenInterval(0.001, 10000,
+                        Validatorless.numbersBetweenInterval(0.01, 10000,
                             "A quantidade deve estar entre 0 e 10000")
                       ],
                     ),
@@ -236,61 +232,67 @@ class _AddProductWidgetState extends State<_AddProductWidget> {
                         Validatorless.required('O campo preço é obrigatório'),
                         Validatorless.regex(
                             RegExp(r'^[0-9.]+$'), 'Somente numeros e ponto'),
-                        Validatorless.numbersBetweenInterval(0.001, 1000000,
+                        Validatorless.numbersBetweenInterval(0.01, 1000000,
                             "O preço deve ser estar entre 0 e 1000000")
                       ],
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  DropdownButton(
+                    value: dropdownValue,
+                    items: const [
+                      DropdownMenuItem(value: 'racao', child: Text('Ração')),
+                      DropdownMenuItem(
+                          value: 'brinquedo', child: Text('Brinquedo')),
+                      DropdownMenuItem(
+                          value: 'remedio', child: Text('Remédio')),
+                      DropdownMenuItem(value: 'outro', child: Text('Outros')),
+                    ],
+                    onChanged: (newValue) {
+                      setState(() {
+                        dropdownValue = newValue!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 25),
+                  OutlinedButton(
+                    onPressed: _showDatePicker,
+                    style: const ButtonStyle(
+                        elevation: MaterialStatePropertyAll(2)),
+                    child: Text(
+                      'Data\n ${chosenDate.day}/${chosenDate.month}/${chosenDate.year}',
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 25),
-            DropdownButton(
-              value: dropdownValue,
-              items: const [
-                DropdownMenuItem(value: 'racao', child: Text('Ração')),
-                DropdownMenuItem(value: 'brinquedo', child: Text('Brinquedo')),
-                DropdownMenuItem(value: 'remedio', child: Text('Remédio')),
-                DropdownMenuItem(value: 'outro', child: Text('Outro')),
-              ],
-              onChanged: (newValue) {
-                setState(() {
-                  dropdownValue = newValue!;
-                });
-              },
-            ),
-            const SizedBox(height: 25),
-            OutlinedButton(
-              onPressed: _showDatePicker,
-              style: const ButtonStyle(elevation: MaterialStatePropertyAll(2)),
-              child: Text(
-                'Data\n ${chosenDate.day}/${chosenDate.month}/${chosenDate.year}',
-                textAlign: TextAlign.center,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
+              child: FilledButton(
+                style: const ButtonStyle(
+                  elevation: MaterialStatePropertyAll(2),
+                ),
+                onPressed: () {
+                  if (widget.formKey.currentState?.validate() == true) {
+                    _postProduct(
+                      name: nameEC.text,
+                      type: dropdownValue,
+                      price:
+                          double.tryParse(priceEC.text.replaceAll(",", "")) ??
+                              0.0,
+                      quantity: double.tryParse(
+                              quantityEC.text.replaceAll(",", "")) ??
+                          0.0,
+                      creationDate: chosenDate,
+                    ).then((value) {
+                      widget.updateProducts();
+                      Navigator.pop(context);
+                    });
+                  }
+                },
+                child: const Text('Adicionar'),
               ),
-            ),
-            const SizedBox(height: 40),
-            FilledButton(
-              style: const ButtonStyle(
-                elevation: MaterialStatePropertyAll(2),
-              ),
-              onPressed: () {
-                if (widget.formKey.currentState?.validate() == true) {
-                  _postProduct(
-                    name: nameEC.text,
-                    type: dropdownValue,
-                    price: double.tryParse(priceEC.text.replaceAll(",", "")) ??
-                        0.0,
-                    quantity:
-                        double.tryParse(quantityEC.text.replaceAll(",", "")) ??
-                            0.0,
-                    creationDate: chosenDate,
-                  ).then((value) {
-                    widget.updateProducts();
-                    Navigator.pop(context);
-                  });
-                }
-              },
-              child: const Text('Adicionar'),
             )
           ],
         ),
