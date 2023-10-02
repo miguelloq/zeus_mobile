@@ -7,6 +7,7 @@ import 'package:zeus_app/src/features/product/services/product_service.dart';
 import 'package:zeus_app/src/features/splash_screen.dart';
 import 'core/models/theme_model.dart';
 import 'core/services/http_service.dart';
+import 'core/services/local_storage_service.dart';
 import 'features/home_screen.dart';
 
 class AppWidget extends StatelessWidget {
@@ -21,10 +22,16 @@ class AppWidget extends StatelessWidget {
           create: (context) => ProductService(httpService: context.read()),
         ),
         Provider(
-          create: (context) => ProductVM(productService: context.read()),
+          create: (context) => LocalStorageService(),
+        ),
+        Provider(
+          create: (context) => ProductVM(
+            productService: context.read(),
+            localStorageService: context.read(),
+          ),
         ),
         ChangeNotifierProvider(
-          create: (context) => ThemeModel(),
+          create: (context) => ThemeModel(localStorageService: context.read()),
         ),
       ],
       child: Consumer<ThemeModel>(

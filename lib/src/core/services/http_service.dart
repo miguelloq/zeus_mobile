@@ -40,7 +40,6 @@ class HttpService {
 
   Future<String> putJson(
       {required String url, required Object postBody}) async {
-    print(postBody);
     final response = await http.put(Uri.parse(url),
         body: postBody,
         headers: <String, String>{'Content-Type': 'application/json'});

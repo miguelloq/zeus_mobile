@@ -1,4 +1,5 @@
 import 'package:mobx/mobx.dart';
+import 'package:zeus_app/src/core/services/local_storage_service.dart';
 import 'package:zeus_app/src/features/product/services/product_service.dart';
 
 import '../models/product_model.dart';
@@ -12,6 +13,7 @@ enum VisibleOption { sevenDays, thirtyDays, all }
 class ProductVM = _ProductVM with _$ProductVM;
 
 abstract class _ProductVM with Store {
+  final LocalStorageService localStorageService;
   double productsTotalPrice;
   List<ProductModel> products;
   List<ProductModel> visibleProducts;
@@ -20,6 +22,7 @@ abstract class _ProductVM with Store {
 
   _ProductVM({
     required this.productService,
+    required this.localStorageService,
   })  : products = [],
         visibleProducts = [],
         productsTotalPrice = 0,
@@ -95,68 +98,9 @@ abstract class _ProductVM with Store {
     }
   }
 
-  // void addProduct(
-  //     {required String name,
-  //     required String type,
-  //     required double price,
-  //     required DateTime creationDate,
-  //     required double quantity}) {
-  //   try {
-  //     productService.postProduct(newProduct: {
-  //       'name': name,
-  //       'type': type,
-  //       'price': price,
-  //       'quantity': quantity,
-  //       'purchaseTime': creationDate.toUtc().toIso8601String()
-  //     });
-  //     updateProducts();
-  //   } on Exception catch (e) {
-  //     errorMessage = e.toString();
-  //     changeState(newState: VMState.error);
-  //   }
-  // }
-
-  void putProducts({
-    required String editProductId,
-    required String name,
-    required double price,
-    required String type,
-    required DateTime creationDate,
-    required double quantity,
-  }) async {
-    try {
-      productService.putProduct(id: editProductId, newProduct: {
-        "name": name,
-        "price": price,
-        "creationDate": creationDate.toUtc().toIso8601String(),
-        "quantity": quantity,
-        "type": type,
-      });
-      updateProducts();
-    } on Exception catch (e) {
-      errorMessage = e.toString();
-      changeState(newState: VMState.error);
-    }
-  }
-
   Future<ProductModel> getProduct({required String id}) {
     return productService.getProduct(id: id);
   }
-
-  // void removeProduct({required String id}) async {
-  //   //changeState(newState: VMState.loading);
-  //   try {
-  //     // var novaproducts = products.where((element) => element.id != id).toList();
-  //     productService.deleteProduct(id: id);
-  //     // products = novaproducts;
-  //     updateProducts();
-  //     //updateVisibility();
-  //   } on Exception catch (e) {
-  //     errorMessage = e.toString();
-  //     changeState(newState: VMState.error);
-  //   }
-  //   //changeState(newState: VMState.loaded);
-  // }
 
   Future<void> updateProducts() async {
     changeState(newState: VMState.loading);

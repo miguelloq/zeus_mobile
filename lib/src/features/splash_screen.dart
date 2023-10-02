@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:zeus_app/src/core/models/theme_model.dart';
 
 import '../core/utils/app_constants.dart';
 
@@ -11,6 +13,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  late final ThemeModel themeModel;
   var _scale = 10.0;
   var _animationOpacityLogo = 0.0;
 
@@ -25,6 +28,8 @@ class _SplashPageState extends State<SplashPage> {
         _scale = 1;
       });
     });
+    themeModel = context.read<ThemeModel>();
+    themeModel.initTheme();
     super.initState();
   }
 
